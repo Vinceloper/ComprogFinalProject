@@ -5,7 +5,9 @@ import getpass
 import hashlib
 import sys
 
-# ============== CONFIG ==============
+# ==================================================
+# MODULE 1: IMPORTS AND CONFIGURATION
+# ==================================================
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
@@ -15,7 +17,9 @@ DB_CONFIG = {
 
 CRITICAL_STOCK_THRESHOLD = 5  # Qty <= threshold is critical
 
-# ============== UTILITIES ==============
+# ==================================================
+# MODULE 2: UTILITY FUNCTIONS
+# ==================================================
 def hash_password(plain: str) -> str:
     return hashlib.sha256(plain.encode("utf-8")).hexdigest()
 
@@ -46,7 +50,9 @@ def validate_positive_float(text: str, allow_zero: bool = False) -> float:
 def safe_upper(s: str):
     return s.strip().upper()
 
-# ============== DB ==============
+# ==================================================
+# MODULE 3: DATABASE CONNECTION MODULE
+# ==================================================
 def create_connection():
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
@@ -57,7 +63,9 @@ def create_connection():
         print(f"Connection Error: {e}")
         return None
 
-# ============== AUTH ==============
+# ==================================================
+# MODULE 4: USER AUTHENTICATION MODULE
+# ==================================================
 def ensure_minimum_data(conn):
     cursor = conn.cursor()
     try:
@@ -174,7 +182,9 @@ def create_user(conn, user):
 #        print(f"{f[0]:<25}{f[1]}")
 #    print("-" * 75 + "\n")
 
-# ============== BRAND MGMT ==============
+# ==================================================
+# MODULE 5: BRAND MANAGEMENT MODULE
+# ==================================================
 def ensure_brand(conn, brand_name):
     cursor = conn.cursor()
     cursor.execute("SELECT BrandID FROM Brand WHERE BrandName = %s", (brand_name,))
@@ -258,7 +268,10 @@ def choose_brand_flow(conn):
         else:
             print("Invalid choice.")
 
-# ============== ADD PRODUCT (NO QTY HERE) ==============
+# ==================================================
+# MODULE 6: PRODUCT MANAGEMENT MODULE
+# ==================================================
+# ADD PRODUCT
 def add_product(conn):
     cursor = conn.cursor()
 
@@ -295,7 +308,10 @@ def add_product(conn):
     except Error as e:
         print(f"Add product failed: {e}\n")
 
-# ============== ADD STOCK QUANTITY (SEPARATE) ==============
+# ==================================================
+# MODULE 7: STOCK MANAGEMENT MODULE
+# ==================================================
+# ADD STOCK QUANTITY
 def add_stock_quantity(conn):
     cursor = conn.cursor()
     pid = input("Enter Product ID to add stock: ").strip()
@@ -323,7 +339,9 @@ def add_stock_quantity(conn):
     except Error as e:
         print(f"Add stock failed: {e}\n")
 
-# ============== VIEW INVENTORY ==============
+# ==================================================
+# MODULE 8: INVENTORY MONITORING MODULE
+# ==================================================
 def view_products(conn):
     cursor = conn.cursor()
     query = """SELECT p.ProductID, b.BrandName, c.CategoryName, 
@@ -350,7 +368,9 @@ def view_products(conn):
         print(f"{pid:<4} | {brand:<20} | {cat:<15} | {pname:<24} | {qty:<10} | {price:<8.2f} | {total:<10.2f}")
     print("-" * 100 + "\n")
 
-# ============== CRITICAL STOCK ==============
+# ==================================================
+# MODULE 9: CRITICAL STOCK MONITORING MODULE
+# ==================================================
 def view_critical_stock(conn):
     cursor = conn.cursor()
     query = """SELECT p.ProductID, b.BrandName, c.CategoryName, p.ProductName, p.Flavor, p.Quantity
@@ -372,7 +392,9 @@ def view_critical_stock(conn):
         print(f"{pid:<4} | {brand:<20} | {cat:<15} | {pname:<24} | {qty:<5}")
     print("-" * 90 + "\n")
 
-# ============== UPDATE PRODUCT (LIMITED) ==============
+# ==================================================
+# MODULE 10: PRODUCT UPDATE MODULE
+# ==================================================
 def update_product(conn):
     cursor = conn.cursor()
     pid = input("Enter Product ID to update: ").strip()
@@ -436,7 +458,9 @@ def update_product(conn):
     except Error as e:
         print(f"Update failed: {e}\n")
 
-# ============== DELETE PRODUCT (ADMIN) ==============
+# ==================================================
+# MODULE 11: PRODUCT DELETION MODULE
+# ==================================================
 def delete_product(conn):
     cursor = conn.cursor()
     pid = input("Enter Product ID to delete: ").strip()
@@ -453,7 +477,9 @@ def delete_product(conn):
     except Error as e:
         print(f"Delete failed: {e}\n")
 
-# ============== SALES ==============
+# ==================================================
+# MODULE 12: SALES PROCESSING MODULE
+# ==================================================
 def process_sale(conn):
     cursor = conn.cursor()
     try:
@@ -491,7 +517,9 @@ def process_sale(conn):
     except Error as e:
         print(f"Sale failed: {e}\n")
 
-# ============== VIEW SALES ==============
+# ==================================================
+# MODULE 13: SALES REPORTING MODULE
+# ==================================================
 def view_sales(conn):
     cursor = conn.cursor()
     cursor.execute("""SELECT s.SaleID, p.ProductName, s.QuantitySold, s.TotalAmount, s.SaleDate
@@ -511,7 +539,9 @@ def view_sales(conn):
         print(f"{sid:<5} | {pname:<24} | {qty:<10} | {total:<12.2f} | {date_str:<20}")
     print("-" * 80 + "\n")
 
-# ============== MENUS ==============
+# ==================================================
+# MODULE 14: SYSTEM MENU MODULE
+# ==================================================
 def admin_menu(conn, user):
     while True:
         print("========= VAPE SHOP INVENTORY SYSTEM (ADMIN) =========")
@@ -594,7 +624,9 @@ def employee_menu(conn, user):
         else:
             print("Invalid choice.\n")
 
-# ============== MAIN ==============
+# ==================================================
+# MODULE 15: MAIN PROGRAM MODULE
+# ==================================================
 def main():
     conn = create_connection()
     if not conn:
